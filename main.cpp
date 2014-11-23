@@ -1,9 +1,9 @@
 ﻿#include "common.h"
-#include "hw0.h"
+#include "hw1.h"
 #include "callbacks.h"
 
 
-unique_ptr<HW0> hw0;
+unique_ptr<HW1> hw;
 
 
 // отрисовка кадра
@@ -12,7 +12,7 @@ void display_func()
    static chrono::system_clock::time_point const start = chrono::system_clock::now();
 
    // вызов функции отрисовки с передачей ей времени от первого вызова
-   hw0->draw_frame(chrono::duration<float>(chrono::system_clock::now() - start).count());
+   hw->draw_frame(chrono::duration<float>(chrono::system_clock::now() - start).count());
 
    // отрисовка GUI
    TwDraw();
@@ -25,7 +25,7 @@ void display_func()
 // Очищаем все ресурсы, пока контекст ещё не удалён
 void close_func()
 {
-   hw0.reset();
+   hw.reset();
 }
 
 
@@ -37,13 +37,13 @@ void process_key_press(unsigned char button, int x, int y)
    switch(button)
    {
    case 'w':
-       hw0->zoom_in();
+       hw->zoom_in();
        break;
    case 's':
-       hw0->zoom_out();
+       hw->zoom_out();
        break;
    case 27:
-      // hw0.reset();
+      // hw.reset();
       exit(0);
    }
 }
@@ -61,9 +61,9 @@ void process_mouse_press(int button, int state, int x, int y)
         return;
 
     if (button == 3 && state == GLUT_UP) {
-        hw0->zoom_in();
+        hw->zoom_in();
     } else if (button == 4 && state == GLUT_UP) {
-        hw0->zoom_out();
+        hw->zoom_out();
     } else {
         mouse_position.x = x;
         mouse_position.y = y;
@@ -75,7 +75,7 @@ void process_mouse_motion(int x, int y)
     if (TwEventMouseMotionGLUT(x, y))
         return;
 
-    hw0->rotate_camera(x - mouse_position.x, y - mouse_position.y);
+    hw->rotate_camera(x - mouse_position.x, y - mouse_position.y);
     mouse_position.x = x;
     mouse_position.y = y;
 }
@@ -85,7 +85,7 @@ int main( int argc, char ** argv )
 {
    if (argc != 2)
    {
-      cerr << "Usage: " << argv[0]  << " (1 | 2 | 3)" << endl;
+      cerr << "Usage: " << argv[0]  << " (3 | 4)" << endl;
       return 0;
    }
 
@@ -106,7 +106,7 @@ int main( int argc, char ** argv )
   // glutInitContextFlags   (GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
    // Указание либо на core либо на compatibility профил
    //glutInitContextProfile (GLUT_COMPATIBILITY_PROFILE );
-   int window_handle = glutCreateWindow("OpenGL basic sample");
+   glutCreateWindow("HW1");
 
    // Инициализация указателей на функции OpenGL
    if (glewInit() != GLEW_OK)
@@ -140,10 +140,9 @@ int main( int argc, char ** argv )
    try
    {
       // Создание класса-примера
-      string vs_name("shaders//hw0_" + string(argv[1]) + ".glslvs");
-      string fs_name("shaders//hw0_" + string(argv[1]) + ".glslfs");
-      hw0.reset(new HW0(vs_name.c_str(), fs_name.c_str()));
-      hw0->init_buffer();
+      string vs_name("shaders//hw1_" + string(argv[1]) + ".glslvs");
+      string fs_name("shaders//hw1_" + string(argv[1]) + ".glslfs");
+      hw.reset(new HW1(vs_name.c_str(), fs_name.c_str()));
       // Вход в главный цикл приложения
       glutMainLoop();
    }

@@ -1,0 +1,17 @@
+#version 130
+
+#define M_PI 3.1415926535897932384626433832795
+
+out vec3 o_color;
+
+uniform float time;
+uniform float v;
+uniform float k;
+uniform float max_dist;
+uniform vec3 center;
+
+void main()
+{
+    vec3 p = vec3(gl_FragCoord / gl_FragCoord.w);
+    o_color = vec3(sin(2 * M_PI * (v * time + length(p - center) * k / (max_dist))));
+}
