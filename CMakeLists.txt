@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(sample_0)
 
-set(cpps main.cpp shader.cpp)
-set(headers shader.h common.h)
+set(cpps main.cpp shader.cpp sample.cpp hw0.cpp)
+set(headers shader.h common.h callbacks.h sample.h hw0.h)
 
 IF (WIN32)
    set(EXTERNAL_LIBS ${PROJECT_SOURCE_DIR}/../../ext CACHE STRING "external libraries location")
