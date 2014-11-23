@@ -8,7 +8,7 @@ class sample_t
 {
 public:
    sample_t(char const *vs_name, char const *fs_name);
-   ~sample_t();
+   virtual ~sample_t();
 
    void init_buffer();
    void draw_frame( float time_from_start );
