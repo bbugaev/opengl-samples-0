@@ -43,13 +43,11 @@ vector<vec2> const HW0::drawing_data() const
 }
 
 
-float HW0::camera_dist() const
+mat4 const HW0::view_matrix() const
 {
-    return sample_t::camera_dist() * camera_dist_coef_;
-}
-
-
-mat4 const HW0::additional_transform() const
-{
-    return mat4_cast(quat(vec3(x_angle_, y_angle_, 0)));
+    vec3 eye(rotateX(vec3(0, 0, 8 * camera_dist_coef_), x_angle_));
+    vec3 up(0, 1, 0);
+    if (eye.z < 0) up *= -1;
+    eye = rotateY(eye, y_angle_);
+    return lookAt(eye, vec3(0, 0, 0), up);
 }

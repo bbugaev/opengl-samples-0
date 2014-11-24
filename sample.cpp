@@ -72,11 +72,11 @@ void sample_t::draw_frame( float time_from_start )
    // строим матрицу проекции с aspect ratio (отношением сторон) таким же, как у окна
    mat4  const proj             = perspective(45.0f, w / h, near_, far_);
    // преобразование из СК мира в СК камеры
-   mat4  const view             = lookAt(vec3(0, 0, camera_dist()), vec3(0, 0, 0), vec3(0, 1, 0));
+   mat4  const view             = view_matrix();
 
    // анимация по времени
    quat  const rotation_by_time = quat(vec3(radians(rotation_angle), 0, 0));
-   mat4  const modelview        = view * additional_transform() * mat4_cast(rotation_by_control_ * rotation_by_time);
+   mat4  const modelview        = view * mat4_cast(rotation_by_control_ * rotation_by_time);
    mat4  const mvp              = proj * modelview;
 
    // выбор режима растеризации - только рёбра или рёбра + грани
@@ -132,13 +132,7 @@ vector<vec2> const sample_t::drawing_data() const
 }
 
 
-float sample_t::camera_dist() const
+mat4 const sample_t::view_matrix() const
 {
-    return 8;
-}
-
-
-mat4 const sample_t::additional_transform() const
-{
-    return mat4();
+    return lookAt(vec3(0, 0, 8), vec3(0, 0, 0), vec3(0, 1, 0));
 }

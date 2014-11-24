@@ -15,8 +15,7 @@ public:
 
 protected:
     vector<vec2> const drawing_data() const;
-    float camera_dist() const;
-    mat4 const additional_transform() const;
+    mat4 const view_matrix() const;
 
 private:
     float const camera_dist_coef_inc_;

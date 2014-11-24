@@ -24,6 +24,7 @@ using std::unique_ptr;
 #include <AntTweakBar.h>
 
 // GLM - работа с матрицами, преобразованиями камеры и проекции
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 using namespace glm;

@@ -15,8 +15,7 @@ public:
 
 protected:
    virtual vector<vec2> const drawing_data() const;
-   virtual float camera_dist() const;
-   virtual mat4 const additional_transform() const;
+   virtual mat4 const view_matrix() const;
 
    float const near_;
    float const far_;
