@@ -163,7 +163,7 @@ void HW1::init_tw()
                 "label='Toggle fullscreen mode' key=F");
 
     TwAddVarRW(bar, "v", TW_TYPE_FLOAT, &v_, "min=0 max=10 step=0.1");
-    TwAddVarRW(bar, "k", TW_TYPE_FLOAT, &k_, "min=0 max=10 step=0.01");
+    TwAddVarRW(bar, "k", TW_TYPE_FLOAT, &k_, "min=0 max=10 step=0.1");
 
     TwAddVarRW(bar, "ObjRotation", TW_TYPE_QUAT4F, &rotation_by_control_,
                "label='Object orientation' opened=true "
