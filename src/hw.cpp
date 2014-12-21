@@ -11,6 +11,8 @@ HW::HW(char const *model_name):
     far_(100.0f),
     wireframe_(false),
     tex_coef_(1),
+    linear_(true),
+    mipmap_(true),
     camera_dist_coef_inc_(0.05f),
     camera_dist_coef_(1.0f),
     angle_inc_(0.01f),
@@ -106,6 +108,7 @@ void HW::draw_model(mat4 const &mvp)
     glUniform1f(coef_attr, tex_coef_);
 
     glBindTexture(GL_TEXTURE_2D, tex_);
+    set_texture_params();
     GLuint const tex_attr = glGetUniformLocation(program_, "tex");
     glUniform1i(tex_attr, 0);
 
@@ -149,19 +152,23 @@ void HW::draw_wireframe(mat4 const &mvp)
 void HW::init_tw()
 {
     TwInit(TW_OPENGL, 0);
-
     TwBar *bar = TwNewBar("Parameters");
-    TwDefine("Parameters size='500 170' color='70 100 120' valueswidth=220 "
-             "iconpos=topleft");
 
+    TwDefine("Parameters size='500 220' color='70 100 120' valueswidth=220 "
+             "iconpos=topleft");
     TwAddVarRW(bar, "Wireframe mode", TW_TYPE_BOOLCPP, &wireframe_,
                "true='ON' false='OFF' key=W");
-
     TwAddButton(bar, "Fullscreen toggle", toggle_fullscreen_callback, 0,
                 "label='Toggle fullscreen mode' key=F");
+    TwAddSeparator(bar, 0, 0);
 
     TwAddVarRW(bar, "Texture coef", TW_TYPE_FLOAT, &tex_coef_,
                "min=0.1 max=10 step=0.1 keyincr=+ keydecr=-");
+    TwAddVarRW(bar, "Min/mag filter", TW_TYPE_BOOLCPP, &linear_,
+               "true='LINEAR' false='NEAREST' key=L");
+    TwAddVarRW(bar, "Mipmap", TW_TYPE_BOOLCPP, &mipmap_,
+               "true='ON' false='OFF' key=M");
+    TwAddSeparator(bar, 0, 0);
 
     TwAddVarRW(bar, "ObjRotation", TW_TYPE_QUAT4F, &rotation_by_control_,
                "label='Object orientation' opened=true "
@@ -192,8 +199,7 @@ void HW::init_texture(char const *tex_name)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, tl.width(), tl.height(), 0,
                  GL_BGR, GL_UNSIGNED_BYTE, tl.bits());
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -264,4 +270,19 @@ void HW::init_vao()
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+void HW::set_texture_params()
+{
+    if (mipmap_) {
+        glTexParameteri(
+                GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                linear_ ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST);
+    } else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                        linear_ ? GL_LINEAR : GL_NEAREST);
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    linear_ ? GL_LINEAR : GL_NEAREST);
 }

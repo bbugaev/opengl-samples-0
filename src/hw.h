@@ -26,6 +26,8 @@ private:
     void init_model(char const *model_name);
     void init_vao();
 
+    void set_texture_params();
+
 private:
     GLuint vs_;
     GLuint fs_;
@@ -44,6 +46,8 @@ private:
     quat rotation_by_control_;
 
     float tex_coef_;
+    bool linear_;
+    bool mipmap_;
 
     float const camera_dist_coef_inc_;
     float camera_dist_coef_;
