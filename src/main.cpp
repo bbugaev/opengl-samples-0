@@ -10,10 +10,8 @@ unique_ptr<HW> hw;
 // отрисовка кадра
 void display_func()
 {
-   static chrono::system_clock::time_point const start = chrono::system_clock::now();
-
    // вызов функции отрисовки с передачей ей времени от первого вызова
-   hw->draw_frame(chrono::duration<float>(chrono::system_clock::now() - start).count());
+   hw->draw_frame();
 
    // отрисовка GUI
    TwDraw();

@@ -10,21 +10,19 @@ public:
     HW(char const *model_name);
     ~HW();
 
-    void draw_frame(float time_from_start);
+    void draw_frame();
 
     void zoom_in();
     void zoom_out();
     void rotate_camera(int dx, int dy);
 
 private:
-    void draw_model(float time_from_start, mat4 const &model,
-                    mat4 const &mvp);
+    void draw_model(mat4 const &mvp);
     void draw_wireframe(mat4 const &mvp);
 
     void init_tw();
     void init_shaders();
     void init_texture(char const *tex_name);
-    void init_constants(vector<float> const &positions);
     void init_model(char const *model_name);
     void init_vao();
 
@@ -51,11 +49,6 @@ private:
     float const angle_inc_;
     float y_angle_;
     float x_angle_;
-
-    float v_;
-    float k_;
-    float max_dist_;
-    vec3 center_;
 
     size_t size_;
     GLuint positions_;

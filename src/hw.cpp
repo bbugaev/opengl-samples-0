@@ -46,11 +46,10 @@ HW::~HW()
 }
 
 
-void HW::draw_frame(float time_from_start)
+void HW::draw_frame()
 {
     float const w = static_cast<float>(glutGet(GLUT_WINDOW_WIDTH));
     float const h = static_cast<float>(glutGet(GLUT_WINDOW_HEIGHT));
-
 
     vec3 eye(rotateX(vec3(0, 0, 16 * camera_dist_coef_), x_angle_));
     vec3 up(0, 1, 0);
@@ -69,7 +68,7 @@ void HW::draw_frame(float time_from_start)
     glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    draw_model(time_from_start, model, mvp);
+    draw_model(mvp);
     if (wireframe_) draw_wireframe(mvp);
 }
 
@@ -95,30 +94,16 @@ void HW::rotate_camera(int dx, int dy)
 }
 
 
-void HW::draw_model(float time_from_start, mat4 const &model,
-                     mat4 const &mvp)
+void HW::draw_model(mat4 const &mvp)
 {
     glUseProgram(program_);
 
     GLuint const mvp_attr = glGetUniformLocation(program_, "mvp");
     glUniformMatrix4fv(mvp_attr, 1, GL_FALSE, &mvp[0][0]);
-    GLuint const model_attr = glGetUniformLocation(program_, "model");
-    glUniformMatrix4fv(model_attr, 1, GL_FALSE, &model[0][0]);
-    GLuint const time_attr = glGetUniformLocation(program_, "time");
-    glUniform1f(time_attr, time_from_start);
 
     glBindTexture(GL_TEXTURE_2D, tex_);
     GLuint const tex_attr = glGetUniformLocation(program_, "tex");
     glUniform1i(tex_attr, 0);
-
-    GLuint const v_attr = glGetUniformLocation(program_, "v");
-    glUniform1f(v_attr, v_);
-    GLuint const k_attr = glGetUniformLocation(program_, "k");
-    glUniform1f(k_attr, k_);
-    GLuint const max_dist_attr = glGetUniformLocation(program_, "max_dist");
-    glUniform1f(max_dist_attr, max_dist_);
-    GLuint const center_attr = glGetUniformLocation(program_, "center");
-    glUniform3fv(center_attr, 1, &center_[0]);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_DEPTH_TEST);
@@ -162,7 +147,7 @@ void HW::init_tw()
     TwInit(TW_OPENGL, 0);
 
     TwBar *bar = TwNewBar("Parameters");
-    TwDefine("Parameters size='500 180' color='70 100 120' valueswidth=220 "
+    TwDefine("Parameters size='500 150' color='70 100 120' valueswidth=220 "
              "iconpos=topleft");
 
     TwAddVarRW(bar, "Wireframe mode", TW_TYPE_BOOLCPP, &wireframe_,
@@ -170,9 +155,6 @@ void HW::init_tw()
 
     TwAddButton(bar, "Fullscreen toggle", toggle_fullscreen_callback, 0,
                 "label='Toggle fullscreen mode' key=F");
-
-    TwAddVarRW(bar, "v", TW_TYPE_FLOAT, &v_, "min=0 max=10 step=0.1");
-    TwAddVarRW(bar, "k", TW_TYPE_FLOAT, &k_, "min=0 max=10 step=0.1");
 
     TwAddVarRW(bar, "ObjRotation", TW_TYPE_QUAT4F, &rotation_by_control_,
                "label='Object orientation' opened=true "
@@ -210,27 +192,6 @@ void HW::init_texture(char const *tex_name)
 }
 
 
-void HW::init_constants(vector<float> const &positions)
-{
-    center_ = vec3(0);
-    for (size_t i = 0; i < positions.size() / 3; ++i)
-    {
-        vec3 const v(positions[3 * i], positions[3 * i + 1],
-                     positions[3 * i + 2]);
-        center_ += v;
-    }
-    center_ /= positions.size() / 3;
-
-    max_dist_ = 0;
-    for (size_t i = 0; i < positions.size() / 3; ++i)
-    {
-        vec3 const v(positions[3 * i], positions[3 * i + 1],
-                     positions[3 * i + 2]);
-        max_dist_ = std::max(max_dist_, length(v - center_));
-    }
-}
-
-
 void HW::init_model(char const *model_name)
 {
     using namespace tinyobj;
@@ -238,8 +199,6 @@ void HW::init_model(char const *model_name)
     vector<material_t> materials;
     LoadObj(shapes, materials, model_name);
     mesh_t const &mesh = shapes.front().mesh;
-
-    init_constants(mesh.positions);
 
     size_ = mesh.indices.size();
 
