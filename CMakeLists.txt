@@ -2,8 +2,11 @@ cmake_minimum_required(VERSION 2.8)
 
 project(sample_0)
 
-set(cpps src/main.cpp src/shader.cpp src/hw1.cpp src/tiny_obj_loader.cc)
-set(headers src/shader.h src/common.h src/callbacks.h src/hw1.h src/filenames.h src/tiny_obj_loader.h src/ubuntu_fix.h)
+set(cpps src/main.cpp src/shader.cpp src/hw1.cpp src/texture_loader.cpp
+         src/tiny_obj_loader.cc)
+set(headers src/shader.h src/common.h src/callbacks.h src/hw1.h
+            src/filenames.h src/texture_loader.h src/tiny_obj_loader.h
+            src/ubuntu_fix.h)
 
 IF (WIN32)
    set(EXTERNAL_LIBS ${PROJECT_SOURCE_DIR}/../../ext CACHE STRING "external libraries location")
@@ -60,5 +63,5 @@ ELSE (WIN32)
     endif(NOT GLEW_FOUND)
 
    include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
-   target_link_libraries(main AntTweakBar X11 GL glut GLEW pthread)
+   target_link_libraries(main AntTweakBar X11 GL glut GLEW freeimage pthread)
 ENDIF (WIN32)
