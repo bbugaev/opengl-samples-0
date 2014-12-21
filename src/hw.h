@@ -39,6 +39,7 @@ private:
 
     GLuint tex_;
 
+    float const initial_camera_dist_;
     float const near_;
     float const far_;
 

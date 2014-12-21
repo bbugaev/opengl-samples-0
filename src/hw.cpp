@@ -7,6 +7,7 @@
 
 
 HW::HW(char const *model_name):
+    initial_camera_dist_(16.0f),
     near_(0.1f),
     far_(100.0f),
     wireframe_(false),
@@ -54,7 +55,8 @@ void HW::draw_frame()
     float const w = static_cast<float>(glutGet(GLUT_WINDOW_WIDTH));
     float const h = static_cast<float>(glutGet(GLUT_WINDOW_HEIGHT));
 
-    vec3 eye(rotateX(vec3(0, 0, 16 * camera_dist_coef_), x_angle_));
+    vec3 eye(rotateX(vec3(0, 0, initial_camera_dist_ * camera_dist_coef_),
+                     x_angle_));
     vec3 up(0, 1, 0);
     if (eye.z < 0) up *= -1;
     eye = rotateY(eye, y_angle_);
@@ -85,8 +87,9 @@ void HW::zoom_in()
 
 void HW::zoom_out()
 {
-    camera_dist_coef_ = std::min(far_,
-                                 camera_dist_coef_ + camera_dist_coef_inc_);
+    camera_dist_coef_ = (1 / initial_camera_dist_)
+            * std::min(far_, (camera_dist_coef_ + camera_dist_coef_inc_)
+                             * initial_camera_dist_);
 }
 
 
