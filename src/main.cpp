@@ -1,10 +1,10 @@
 ﻿#include "ubuntu_fix.h"
 #include "common.h"
-#include "hw1.h"
+#include "hw.h"
 #include "callbacks.h"
 
 
-unique_ptr<HW1> hw;
+unique_ptr<HW> hw;
 
 
 // отрисовка кадра
@@ -107,7 +107,7 @@ int main( int argc, char ** argv )
   // glutInitContextFlags   (GLUT_FORWARD_COMPATIBLE | GLUT_DEBUG);
    // Указание либо на core либо на compatibility профил
    //glutInitContextProfile (GLUT_COMPATIBILITY_PROFILE );
-   glutCreateWindow("HW1");
+   glutCreateWindow("HW");
 
    // Инициализация указателей на функции OpenGL
    if (glewInit() != GLEW_OK)
@@ -141,9 +141,9 @@ int main( int argc, char ** argv )
    try
    {
       // Создание класса-примера
-      string vs_name("shaders//hw1_" + string(argv[1]) + ".glslvs");
-      string fs_name("shaders//hw1_" + string(argv[1]) + ".glslfs");
-      hw.reset(new HW1(vs_name.c_str(), fs_name.c_str()));
+      string const vs_name("shaders//hw1_" + string(argv[1]) + ".glslvs");
+      string const fs_name("shaders//hw1_" + string(argv[1]) + ".glslfs");
+      hw.reset(new HW(vs_name.c_str(), fs_name.c_str()));
       // Вход в главный цикл приложения
       glutMainLoop();
    }

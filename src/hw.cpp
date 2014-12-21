@@ -1,11 +1,11 @@
-#include "hw1.h"
+#include "hw.h"
 #include "filenames.h"
 #include "callbacks.h"
 #include "shader.h"
 #include "tiny_obj_loader.h"
 
 
-HW1::HW1(char const *vs_name, char const *fs_name):
+HW::HW(char const *vs_name, char const *fs_name):
     near_(0.1f),
     far_(100.0f),
     wireframe_(false),
@@ -22,7 +22,7 @@ HW1::HW1(char const *vs_name, char const *fs_name):
 }
 
 
-HW1::~HW1()
+HW::~HW()
 {
     glDeleteProgram(program_);
     glDeleteShader(vs_);
@@ -42,7 +42,7 @@ HW1::~HW1()
 }
 
 
-void HW1::draw_frame(float time_from_start)
+void HW::draw_frame(float time_from_start)
 {
     float const w = static_cast<float>(glutGet(GLUT_WINDOW_WIDTH));
     float const h = static_cast<float>(glutGet(GLUT_WINDOW_HEIGHT));
@@ -70,28 +70,28 @@ void HW1::draw_frame(float time_from_start)
 }
 
 
-void HW1::zoom_in()
+void HW::zoom_in()
 {
     camera_dist_coef_ = std::max(near_,
                                  camera_dist_coef_ - camera_dist_coef_inc_);
 }
 
 
-void HW1::zoom_out()
+void HW::zoom_out()
 {
     camera_dist_coef_ = std::min(far_,
                                  camera_dist_coef_ + camera_dist_coef_inc_);
 }
 
 
-void HW1::rotate_camera(int dx, int dy)
+void HW::rotate_camera(int dx, int dy)
 {
     x_angle_ += angle_inc_ * dy;
     y_angle_ += angle_inc_ * dx;
 }
 
 
-void HW1::draw_model(float time_from_start, mat4 const &model,
+void HW::draw_model(float time_from_start, mat4 const &model,
                      mat4 const &mvp)
 {
     glUseProgram(program_);
@@ -125,7 +125,7 @@ void HW1::draw_model(float time_from_start, mat4 const &model,
 }
 
 
-void HW1::draw_wireframe(mat4 const &mvp)
+void HW::draw_wireframe(mat4 const &mvp)
 {
     glUseProgram(wireframe_program_);
 
@@ -148,7 +148,7 @@ void HW1::draw_wireframe(mat4 const &mvp)
 }
 
 
-void HW1::init_tw()
+void HW::init_tw()
 {
     TwInit(TW_OPENGL, 0);
 
@@ -171,7 +171,7 @@ void HW1::init_tw()
 }
 
 
-void HW1::init_shaders(char const *vs_name, char const *fs_name)
+void HW::init_shaders(char const *vs_name, char const *fs_name)
 {
     vs_ = create_shader(GL_VERTEX_SHADER  , vs_name);
     fs_ = create_shader(GL_FRAGMENT_SHADER, fs_name);
@@ -183,7 +183,7 @@ void HW1::init_shaders(char const *vs_name, char const *fs_name)
 }
 
 
-void HW1::init_constants(vector<float> const &positions)
+void HW::init_constants(vector<float> const &positions)
 {
     center_ = vec3(0);
     for (size_t i = 0; i < positions.size() / 3; ++i)
@@ -204,7 +204,7 @@ void HW1::init_constants(vector<float> const &positions)
 }
 
 
-void HW1::init_model()
+void HW::init_model()
 {
     using namespace tinyobj;
     vector<shape_t> shapes;
@@ -239,7 +239,7 @@ void HW1::init_model()
 }
 
 
-void HW1::init_vao()
+void HW::init_vao()
 {
     glGenVertexArrays(1, &vao_);
     glBindVertexArray(vao_);

@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 
 project(sample_0)
 
-set(cpps src/main.cpp src/shader.cpp src/hw1.cpp src/texture_loader.cpp
+set(cpps src/main.cpp src/shader.cpp src/hw.cpp src/texture_loader.cpp
          src/tiny_obj_loader.cc)
-set(headers src/shader.h src/common.h src/callbacks.h src/hw1.h
+set(headers src/shader.h src/common.h src/callbacks.h src/hw.h
             src/filenames.h src/texture_loader.h src/tiny_obj_loader.h
             src/ubuntu_fix.h)
 

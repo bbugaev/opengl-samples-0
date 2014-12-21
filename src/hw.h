@@ -1,14 +1,14 @@
-#ifndef HW1_H
-#define HW1_H
+#ifndef HW_H
+#define HW_H
 
 #include "common.h"
 
 
-class HW1
+class HW
 {
 public:
-    HW1(char const *vs_name, char const *fs_name);
-    ~HW1();
+    HW(char const *vs_name, char const *fs_name);
+    ~HW();
 
     void draw_frame(float time_from_start);
 
@@ -62,4 +62,4 @@ private:
 };
 
 
-#endif // HW1_H
+#endif // HW_H
