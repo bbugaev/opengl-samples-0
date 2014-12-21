@@ -2,10 +2,11 @@
 #include "filenames.h"
 #include "callbacks.h"
 #include "shader.h"
+#include "texture_loader.h"
 #include "tiny_obj_loader.h"
 
 
-HW::HW(char const *vs_name, char const *fs_name):
+HW::HW(char const *model_name):
     near_(0.1f),
     far_(100.0f),
     wireframe_(false),
@@ -16,8 +17,9 @@ HW::HW(char const *vs_name, char const *fs_name):
     x_angle_(0)
 {
     init_tw();
-    init_shaders(vs_name, fs_name);
-    init_model();
+    init_shaders();
+    init_texture(TEX_FILE);
+    init_model(model_name);
     init_vao();
 }
 
@@ -31,6 +33,8 @@ HW::~HW()
     glDeleteProgram(wireframe_program_);
     glDeleteShader(wireframe_vs_);
     glDeleteShader(wireframe_fs_);
+
+    glDeleteTextures(1, &tex_);
 
     glDeleteVertexArrays(1, &vao_);
     glDeleteBuffers(1, &positions_);
@@ -103,6 +107,10 @@ void HW::draw_model(float time_from_start, mat4 const &model,
     GLuint const time_attr = glGetUniformLocation(program_, "time");
     glUniform1f(time_attr, time_from_start);
 
+    glBindTexture(GL_TEXTURE_2D, tex_);
+    GLuint const tex_attr = glGetUniformLocation(program_, "tex");
+    glUniform1i(tex_attr, 0);
+
     GLuint const v_attr = glGetUniformLocation(program_, "v");
     glUniform1f(v_attr, v_);
     GLuint const k_attr = glGetUniformLocation(program_, "k");
@@ -120,8 +128,9 @@ void HW::draw_model(float time_from_start, mat4 const &model,
 
     glDrawElements(GL_TRIANGLES, size_, GL_UNSIGNED_INT, 0);
 
-    glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -171,15 +180,33 @@ void HW::init_tw()
 }
 
 
-void HW::init_shaders(char const *vs_name, char const *fs_name)
+void HW::init_shaders()
 {
-    vs_ = create_shader(GL_VERTEX_SHADER  , vs_name);
-    fs_ = create_shader(GL_FRAGMENT_SHADER, fs_name);
+    vs_ = create_shader(GL_VERTEX_SHADER, MAIN_VS_FILE);
+    fs_ = create_shader(GL_FRAGMENT_SHADER, MAIN_FS_FILE);
     program_ = create_program(vs_, fs_);
 
     wireframe_vs_ = create_shader(GL_VERTEX_SHADER, WIREFRAME_VS_FILE);
     wireframe_fs_ = create_shader(GL_FRAGMENT_SHADER, WIREFRAME_FS_FILE);
     wireframe_program_ = create_program(wireframe_vs_, wireframe_fs_);
+}
+
+
+void HW::init_texture(char const *tex_name)
+{
+    TextureLoader tl(tex_name);
+    if (!tl.bits()) return;
+
+    glGenTextures(1, &tex_);
+    glBindTexture(GL_TEXTURE_2D, tex_);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, tl.width(), tl.height(), 0,
+                 GL_BGR, GL_UNSIGNED_BYTE, tl.bits());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -204,12 +231,12 @@ void HW::init_constants(vector<float> const &positions)
 }
 
 
-void HW::init_model()
+void HW::init_model(char const *model_name)
 {
     using namespace tinyobj;
     vector<shape_t> shapes;
     vector<material_t> materials;
-    LoadObj(shapes, materials, MODEL_FILE);
+    LoadObj(shapes, materials, model_name);
     mesh_t const &mesh = shapes.front().mesh;
 
     init_constants(mesh.positions);
@@ -234,6 +261,12 @@ void HW::init_model()
                  sizeof(float) * mesh.normals.size(), mesh.normals.data(),
                  GL_STATIC_DRAW);
 
+    glGenBuffers(1, &texcoords_);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, texcoords_);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 sizeof(float) * mesh.texcoords.size(), mesh.texcoords.data(),
+                 GL_STATIC_DRAW);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
@@ -245,11 +278,11 @@ void HW::init_vao()
     glBindVertexArray(vao_);
 
     glBindBuffer(GL_ARRAY_BUFFER, positions_);
-    GLuint pos_attr = glGetAttribLocation(program_, "position");
+    GLuint pos_attr = glGetAttribLocation(program_, "in_pos");
     glVertexAttribPointer(pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(pos_attr);
 
-    pos_attr = glGetAttribLocation(wireframe_program_, "position");
+    pos_attr = glGetAttribLocation(wireframe_program_, "in_pos");
     glVertexAttribPointer(pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(pos_attr);
 
@@ -257,6 +290,11 @@ void HW::init_vao()
     GLuint const normal_attr = glGetAttribLocation(program_, "normal");
     glVertexAttribPointer(normal_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(normal_attr);
+
+    glBindBuffer(GL_ARRAY_BUFFER, texcoords_);
+    GLuint const texcoords_attr = glGetAttribLocation(program_, "in_st");
+    glVertexAttribPointer(texcoords_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(texcoords_attr);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

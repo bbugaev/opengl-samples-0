@@ -7,7 +7,7 @@
 class HW
 {
 public:
-    HW(char const *vs_name, char const *fs_name);
+    HW(char const *model_name);
     ~HW();
 
     void draw_frame(float time_from_start);
@@ -22,9 +22,10 @@ private:
     void draw_wireframe(mat4 const &mvp);
 
     void init_tw();
-    void init_shaders(char const *vs_name, char const *fs_name);
+    void init_shaders();
+    void init_texture(char const *tex_name);
     void init_constants(vector<float> const &positions);
-    void init_model();
+    void init_model(char const *model_name);
     void init_vao();
 
 private:
@@ -35,6 +36,8 @@ private:
     GLuint wireframe_vs_;
     GLuint wireframe_fs_;
     GLuint wireframe_program_;
+
+    GLuint tex_;
 
     float const near_;
     float const far_;
@@ -58,6 +61,7 @@ private:
     GLuint positions_;
     GLuint indices_;
     GLuint normals_;
+    GLuint texcoords_;
     GLuint vao_;
 };
 

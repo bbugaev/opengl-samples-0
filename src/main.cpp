@@ -86,7 +86,7 @@ int main( int argc, char ** argv )
 {
    if (argc != 2)
    {
-      cerr << "Usage: " << argv[0]  << " (3 | 4)" << endl;
+      cerr << "Usage: " << argv[0]  << " {quad, cylinder, sphere}" << endl;
       return 0;
    }
 
@@ -141,9 +141,8 @@ int main( int argc, char ** argv )
    try
    {
       // Создание класса-примера
-      string const vs_name("shaders//hw1_" + string(argv[1]) + ".glslvs");
-      string const fs_name("shaders//hw1_" + string(argv[1]) + ".glslfs");
-      hw.reset(new HW(vs_name.c_str(), fs_name.c_str()));
+      string const model_name("models//" + string(argv[1]) + ".obj");
+      hw.reset(new HW(model_name.c_str()));
       // Вход в главный цикл приложения
       glutMainLoop();
    }
