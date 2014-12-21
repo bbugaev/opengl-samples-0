@@ -43,6 +43,8 @@ private:
     bool wireframe_;
     quat rotation_by_control_;
 
+    float tex_coef_;
+
     float const camera_dist_coef_inc_;
     float camera_dist_coef_;
 

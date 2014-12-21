@@ -7,11 +7,12 @@ out vec3 vs_out_color;
 out vec2 vs_out_st;
 
 uniform mat4 mvp;
+uniform float coef_st;
 
 
 void main()
 {
     gl_Position = mvp * vec4(in_pos, 1);
     vs_out_color = vec3(1);
-    vs_out_st = in_st;
+    vs_out_st = in_st * coef_st;
 }

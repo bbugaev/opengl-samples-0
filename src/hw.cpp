@@ -10,6 +10,7 @@ HW::HW(char const *model_name):
     near_(0.1f),
     far_(100.0f),
     wireframe_(false),
+    tex_coef_(1),
     camera_dist_coef_inc_(0.05f),
     camera_dist_coef_(1.0f),
     angle_inc_(0.01f),
@@ -101,6 +102,9 @@ void HW::draw_model(mat4 const &mvp)
     GLuint const mvp_attr = glGetUniformLocation(program_, "mvp");
     glUniformMatrix4fv(mvp_attr, 1, GL_FALSE, &mvp[0][0]);
 
+    GLuint const coef_attr = glGetUniformLocation(program_, "coef_st");
+    glUniform1f(coef_attr, tex_coef_);
+
     glBindTexture(GL_TEXTURE_2D, tex_);
     GLuint const tex_attr = glGetUniformLocation(program_, "tex");
     glUniform1i(tex_attr, 0);
@@ -147,7 +151,7 @@ void HW::init_tw()
     TwInit(TW_OPENGL, 0);
 
     TwBar *bar = TwNewBar("Parameters");
-    TwDefine("Parameters size='500 150' color='70 100 120' valueswidth=220 "
+    TwDefine("Parameters size='500 170' color='70 100 120' valueswidth=220 "
              "iconpos=topleft");
 
     TwAddVarRW(bar, "Wireframe mode", TW_TYPE_BOOLCPP, &wireframe_,
@@ -155,6 +159,9 @@ void HW::init_tw()
 
     TwAddButton(bar, "Fullscreen toggle", toggle_fullscreen_callback, 0,
                 "label='Toggle fullscreen mode' key=F");
+
+    TwAddVarRW(bar, "Texture coef", TW_TYPE_FLOAT, &tex_coef_,
+               "min=0.1 max=10 step=0.1 keyincr=+ keydecr=-");
 
     TwAddVarRW(bar, "ObjRotation", TW_TYPE_QUAT4F, &rotation_by_control_,
                "label='Object orientation' opened=true "
