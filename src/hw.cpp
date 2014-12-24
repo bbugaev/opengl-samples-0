@@ -214,6 +214,11 @@ void HW::init_model(char const *model_name)
     vector<shape_t> shapes;
     vector<material_t> materials;
     LoadObj(shapes, materials, model_name);
+
+    if (shapes.empty()) {
+        return;
+    }
+
     mesh_t const &mesh = shapes.front().mesh;
 
     size_ = mesh.indices.size();
