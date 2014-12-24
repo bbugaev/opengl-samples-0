@@ -1,8 +1,6 @@
 #ifndef TEXTURE_LOADER_H
 #define TEXTURE_LOADER_H
 
-#include <FreeImage.h>
-
 
 class TextureLoader
 {
@@ -16,14 +14,14 @@ public:
     unsigned height() const
     { return height_; }
 
-    BYTE *bits() const
+    unsigned char *bits() const
     { return bits_; }
 
 private:
     unsigned width_;
     unsigned height_;
-    BYTE *bits_;
-    FIBITMAP *dib_;
+    unsigned char *bits_;
+    void *dib_;
 };
 
 
